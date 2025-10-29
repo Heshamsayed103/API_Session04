@@ -1,24 +1,29 @@
 ﻿using AutoMapper;
-
+using Store.G04.Services.Specifications;
 using Store.G04.Services.Specifications.Products;
-
 
 namespace Store.G04.Services.Products
 {
     public class ProductService(IUnitOfWork _unitOfWork, IMapper _mapper) : IProductService
     {
 
-        public async Task<IEnumerable<ProductResponse>> GetAllProductsAsync()
+        public async Task<PaginationResponse<ProductResponse>> GetAllProductsAsync(ProductQueryParameters parameters)
         {
             //var spec = new BaseSpecifications<int, Product>(null);
             //spec.Includes.Add(P => P.Brand);
             //spec.Includes.Add(P => P.Type);
 
-            var spec = new ProductsWithBrandAndTypeSpecifications();
+            var spec = new ProductsWithBrandAndTypeSpecifications(parameters);
 
             var products = await _unitOfWork.GetRepository<int, Product>().GetAllAsync(spec);
+           
             var result = _mapper.Map<IEnumerable<ProductResponse>>(products);
-            return result;
+
+            var specCount = new ProductsCountSpecifications(parameters);
+
+            var count = await _unitOfWork.GetRepository<int, Product>().CountAsync(specCount);
+
+            return new PaginationResponse<ProductResponse>(parameters.PageIndex, parameters.PageSize, count, result);
         }
 
         public async Task<ProductResponse> GetProductByIdAsync(int id)
@@ -27,6 +32,7 @@ namespace Store.G04.Services.Products
 
 
             var product = await _unitOfWork.GetRepository<int, Product>().GetAsync(spec);
+            if (product is null) throw new ProductNotFoundExceptions(id);
             var result = _mapper.Map<ProductResponse>(product);
             return result;
         }

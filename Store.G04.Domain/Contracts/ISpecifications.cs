@@ -12,5 +12,12 @@ namespace Store.G04.Domain.Contracts
     {
          List<Expression<Func<TEntity, object>>> Includes { get; set; }
          Expression<Func<TEntity, bool>>? Criteria { get; set; }
+
+         Expression<Func<TEntity, object>>? OrderBy { get; set; }
+         Expression<Func<TEntity, object>>? OrderByDescending { get; set; }
+
+         int Skip { get; set; }
+         int Take { get; set; }
+         bool IsPagination { get; set; }
     }
 }

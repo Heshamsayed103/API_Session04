@@ -1,11 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Store.G04.Domain.Entities.Products;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Store.G04.persistence.Data.Contexts
 {

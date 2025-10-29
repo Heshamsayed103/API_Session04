@@ -1,5 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Store.G04.Services.Abstractions;
+using Store.G04.Shared;
+using Store.G04.Shared.Dtos.Products;
+using Store.G04.Shared.ErrorsModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,16 +17,26 @@ namespace Store.G04.Presentation
     public class ProductController(IServiceManager _serviceManager) : ControllerBase
     {
 
+        // priceasc
+        // pricedesc
+        // nameasc
+
         [HttpGet] // Get: baseUrl/api/products
-        public async Task<IActionResult> GetAllProducts()
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PaginationResponse<ProductResponse>))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ErrorDetails))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorDetails))] 
+        public async Task<ActionResult<PaginationResponse<ProductResponse>>> GetAllProducts([FromQuery] ProductQueryParameters parameters)
         {
-            var result = await _serviceManager.ProductService.GetAllProductsAsync();
-            if (result is null) return BadRequest(); // 400
+            var result = await _serviceManager.ProductService.GetAllProductsAsync(parameters);
             return Ok(result); // 200
         }
 
         [HttpGet("{id}")] // Get: baseUrl/api/products/5
-        public async Task<IActionResult> GetProductById(int? id)
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ProductResponse))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ErrorDetails))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorDetails))]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorDetails))]
+        public async Task<ActionResult<ProductResponse>> GetProductById(int? id)
         {
             if(id is null)return BadRequest();
 
@@ -34,7 +48,10 @@ namespace Store.G04.Presentation
         }
 
         [HttpGet("brands")] // Get: baseUrl/api/brands
-        public async Task<IActionResult> GetAllBrands()
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<BrandTypeResponse>))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ErrorDetails))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorDetails))]
+        public async Task<ActionResult<BrandTypeResponse>> GetAllBrands()
         {
             var result = await _serviceManager.ProductService.GetAllBrandsAsync();
             if (result is null) return BadRequest(); // 400
@@ -42,7 +59,10 @@ namespace Store.G04.Presentation
         }
 
         [HttpGet("types")] // Get: baseUrl/api/types
-        public async Task<IActionResult> GetAllTypes()
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<BrandTypeResponse>))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ErrorDetails))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorDetails))]
+        public async Task<ActionResult<BrandTypeResponse>> GetAllTypes()
         {
             var result = await _serviceManager.ProductService.GetAllTypeAsync();
             if (result is null) return BadRequest(); // 400

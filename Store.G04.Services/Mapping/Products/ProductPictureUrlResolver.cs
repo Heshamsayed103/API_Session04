@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using AutoMapper.Configuration;
+using Microsoft.Extensions.Configuration;
 
 namespace Store.G04.Services.Mapping.Products
 {
